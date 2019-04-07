@@ -65,7 +65,7 @@ def get_post(id, check_author=True):
 
 @bp.route('/<int:id>', methods=['GET'])
 def look(id):
-    post = get_post(id)
+    post = get_post(id, check_author=False)
     return render_template('blog/look.html', post=post)
 
 
