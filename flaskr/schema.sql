@@ -16,13 +16,6 @@ CREATE TABLE post
     created   TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     title     TEXT      NOT NULL,
     body      TEXT      NOT NULL,
-    votes INTEGER DEFAULT 0,
+    votes     INTEGER  NOT NULL,
     FOREIGN KEY (author_id) REFERENCES user (id)
-);
-CREATE TABLE decision
-(
-    pos TEXT NOT NULL,
-    neg TEXT NOT NULL,
-    user_id INTEGER NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES user (id)
 );

@@ -9,6 +9,11 @@
         <div>
           <div class="about">by {{ post['username'] }} on {{ post['created'].strftime('%Y-%m-%d') }}</div>
         </div>
+        <a class="up" href="{{ url_for('blog.upvote', id=post['id']) }}">Agree</a>
+        <text><br>
+            {{ post['votes'] }}
+            <br></text>
+        <a class="down" href="{{ url_for('blog.downvote', id=post['id']) }}">Disagree</a>
         {% if g.user['id'] == post['author_id'] %}
           <a class="action" href="{{ url_for('blog.update', id=post['id']) }}">Edit</a>
         {% endif %}
