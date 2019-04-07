@@ -51,7 +51,7 @@ def get_post(id, check_author=True):
         'SELECT p.id, title, body, created, author_id, username '
         ' FROM post p JOIN user u ON p.author_id = u.id'
         ' WHERE p.id = ?',
-        [id,]
+        [id, ]
     ).fetchone()
 
     if post is None:
@@ -65,11 +65,12 @@ def get_post(id, check_author=True):
 
 @bp.route('/<int:id>', methods=['GET'])
 def look(id):
-    post = get_post(id)
-    return render_template('blog/look.html', post=post)
+    post = get_post(id, check_author=False)
+    count = get_db().execute('SELECT votes FROM post p WHERE p.id= ?', [id, ])
+    return render_template('blog/look.html', post=post, count=count)
 
 
-@bp.route('/<int:id>/upvote',methods=['POST'])
+@bp.route('/<int:id>/upvote', methods=['GET','POST'])
 @login_required
 def upvote(id):
     post = get_post(id)
@@ -102,12 +103,13 @@ def upvote(id):
     get_db().execute('UPDATE post SET votes = votes + 1')
     get_db().execute('UPDATE pos = ? '
                      ' FROM decision p JOIN user u ON p.user_id = u.id'
-                     ' WHERE p.user_id = ?', (stuff+" "+id+" ", g.user['id'])
+                     ' WHERE p.user_id = ?', (stuff + " " + id + " ", g.user['id'])
                      )
 
     return redirect('blog.look', id)
 
-@bp.route('/<int:id>/downvote',methods=['POST'])
+
+@bp.route('/<int:id>/downvote', methods=['POST'])
 @login_required
 def downvote(id):
     post = get_post(id)
@@ -140,7 +142,7 @@ def downvote(id):
     get_db().execute('UPDATE post SET votes = votes + 1')
     get_db().execute('UPDATE pos = ? '
                      ' FROM decision p JOIN user u ON p.user_id = u.id'
-                     ' WHERE p.user_id = ?', (stuff2+" "+id+" ", g.user['id'])
+                     ' WHERE p.user_id = ?', (stuff2 + " " + id + " ", g.user['id'])
                      )
 
     return redirect('blog.look', id)
