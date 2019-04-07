@@ -17,5 +17,13 @@ CREATE TABLE post
     title     TEXT      NOT NULL,
     body      TEXT      NOT NULL,
     votes     INTEGER  NOT NULL,
+    writer    TEXT NOT NULL,
     FOREIGN KEY (author_id) REFERENCES user (id)
+);
+CREATE TABLE comment
+(
+    writer TEXT NOT NULL,
+    body TEXT NOT NULL,
+    id INTEGER NOT NULL,
+    created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

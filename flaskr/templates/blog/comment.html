@@ -22,20 +22,12 @@
     </article>
     <br>
     <br>
-    <a class="action" href="{{ url_for('blog.comment',id = post['id'])}}">Comment</a>
-    {% for c in comment %}
+    <form method="post">
+        <label for="body">Comment: (Please state what side you picked and why) </label>
+        <textarea name="body" id="body" value="{{ request.form['body'] }}"></textarea>
+     <input type="submit" value="Save">
+    </form>
 
-<article class="comment">
-    <header>
-        <div>
-            <h1>{{ c['writer'] }}</h1>
-            <div> {{ c['created'].strftime('%Y-%m-%d') }}</div>
-        </div>
-    </header>
-    <p class="body">{{ c['body'] }}</p>
-</article>
-{% if not loop.last %}
-<hr>
-     {% endif %}
-    {% endfor %}
+
+
 {% endblock %}

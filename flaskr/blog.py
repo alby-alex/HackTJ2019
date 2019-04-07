@@ -13,8 +13,8 @@ bp = Blueprint('blog', __name__)
 def index():
     db = get_db()
     posts = db.execute(
-        'SELECT p.id, title, body, created, author_id, votes'
-        ' FROM post p JOIN user u ON p.author_id = u.id'
+        'SELECT p.id, title, body, created, writer, author_id, votes'
+        ' FROM post p '
         ' ORDER BY votes DESC'
     ).fetchall()
     return render_template('blog/index.html', posts=posts)
@@ -36,9 +36,9 @@ def create():
         else:
             db = get_db()
             db.execute(
-                'INSERT INTO post (title, body, author_id, votes)'
-                ' VALUES (?, ?, ?, 0)',
-                (title, body, g.user['id'])
+                'INSERT INTO post (title, body, author_id, writer, votes)'
+                ' VALUES (?, ?, ?, ?, 0)',
+                (title, body, g.user['id'], g.user['username'])
             )
             db.commit()
             return redirect(url_for('blog.index'))
@@ -48,7 +48,7 @@ def create():
 
 def get_post(id, check_author=True):
     post = get_db().execute(
-        'SELECT p.id, title, body, created, author_id, votes '
+        'SELECT p.id, title, body, created, author_id, writer, votes '
         ' FROM post p'
         ' WHERE p.id = ?',
         [id, ]
@@ -61,12 +61,35 @@ def get_post(id, check_author=True):
             abort(403)
 
     return post
+@bp.route('/<int:id>/comment', methods = ['GET', 'POST'])
+@login_required
+def comment(id):
+    if request.method=='POST':
+        writer = g.user['username']
+        body = request.form['body']
+        if body is None:
+            flash("body of comment cannot be null")
+        get_db().execute(
+            'INSERT INTO comment (writer, body, id)'
+            ' VALUES (?, ?, ?)',
+            (writer, body, id)
+        )
+        get_db().commit()
+        return redirect(url_for('blog.look', id=id))
+
+    return render_template('blog/comment.html', post = get_post(id, check_author=False))
 
 
 @bp.route('/<int:id>', methods=['GET'])
 def look(id):
     post = get_post(id, check_author=False)
-    return render_template('blog/look.html', post=post)
+    db = get_db()
+    comments = db.execute(
+        'SELECT body, writer, created'
+        ' FROM comment p '
+        ' ORDER BY created DESC'
+    ).fetchall()
+    return render_template('blog/look.html', post=post, comment= comments)
 
 
 @bp.route('/<int:id>/upvote', methods=['GET', 'POST'])
