@@ -48,19 +48,102 @@ def create():
 
 def get_post(id, check_author=True):
     post = get_db().execute(
-        'SELECT p.id, title, body, created, author_id, username'
+        'SELECT p.id, title, body, created, author_id, username '
         ' FROM post p JOIN user u ON p.author_id = u.id'
         ' WHERE p.id = ?',
-        (id,)
+        [id,]
     ).fetchone()
 
     if post is None:
         abort(404, "Post id {0} doesn't exist.".format(id))
-
-    if check_author and post['author_id'] != g.user['id']:
-        abort(403)
+    if g.user is not None and post is not None:
+        if check_author and post['author_id'] != g.user['id']:
+            abort(403)
 
     return post
+
+
+@bp.route('/<int:id>', methods=['GET'])
+def look(id):
+    post = get_post(id)
+    return render_template('blog/look.html', post=post)
+
+
+@bp.route('/<int:id>/upvote',methods=['POST'])
+@login_required
+def upvote(id):
+    post = get_post(id)
+
+    stuff = get_db().execute('SELECT pos '
+                             ' FROM decision p JOIN user u ON p.user_id = u.id'
+                             ' WHERE p.user_id = ? ', (g.user['id'])
+                             ).fetchone()
+    stuff2 = get_db().execute('SELECT neg '
+                              ' FROM decision p JOIN user u ON p.user_id = u.id'
+                              ' WHERE p.user_id = ? ', (g.user['id'])
+                              ).fetchone()
+    if " " + str(post.id) + " " in stuff:
+        get_db().execute('UPDATE post SET votes = votes - 1')
+        var = stuff.index(" " + str(post.id) + " ")
+        stuff = stuff[0:var] + stuff[var + len(" " + str(post.id) + " "):]
+        get_db().execute('UPDATE pos = ? '
+                         ' FROM decision p JOIN user u ON p.user_id = u.id'
+                         ' WHERE p.user_id = ? ', (stuff, g.user['id'])
+                         )
+        return redirect('blog.look', id)
+    elif " " + str(post.id) + " " in stuff2:
+        get_db().execute('UPDATE post SET votes = votes + 1')
+        var = stuff2.index(" " + str(post.id) + " ")
+        stuff2 = stuff2[0:var] + stuff2[var + len(" " + str(post.id) + " "):]
+        get_db().execute('UPDATE neg = ? '
+                         ' FROM decision p JOIN user u ON p.user_id = u.id'
+                         ' WHERE p.user_id = ?', (stuff2, g.user['id'])
+                         )
+    get_db().execute('UPDATE post SET votes = votes + 1')
+    get_db().execute('UPDATE pos = ? '
+                     ' FROM decision p JOIN user u ON p.user_id = u.id'
+                     ' WHERE p.user_id = ?', (stuff+" "+id+" ", g.user['id'])
+                     )
+
+    return redirect('blog.look', id)
+
+@bp.route('/<int:id>/downvote',methods=['POST'])
+@login_required
+def downvote(id):
+    post = get_post(id)
+
+    stuff = get_db().execute('SELECT pos '
+                             ' FROM decision p JOIN user u ON p.user_id = u.id'
+                             ' WHERE p.user_id = ? ', (g.user['id'])
+                             ).fetchone()
+    stuff2 = get_db().execute('SELECT neg '
+                              ' FROM decision p JOIN user u ON p.user_id = u.id'
+                              ' WHERE p.user_id = ? ', (g.user['id'])
+                              ).fetchone()
+    if " " + str(post.id) + " " in stuff2:
+        get_db().execute('UPDATE post SET votes = votes - 1')
+        var = stuff2.index(" " + str(post.id) + " ")
+        stuff2 = stuff2[0:var] + stuff2[var + len(" " + str(post.id) + " "):]
+        get_db().execute('UPDATE pos = ? '
+                         ' FROM decision p JOIN user u ON p.user_id = u.id'
+                         ' WHERE p.user_id = ? ', (stuff2, g.user['id'])
+                         )
+        return redirect('blog.look', id)
+    elif " " + str(post.id) + " " in stuff:
+        get_db().execute('UPDATE post SET votes = votes + 1')
+        var = stuff.index(" " + str(post.id) + " ")
+        stuff = stuff[0:var] + stuff[var + len(" " + str(post.id) + " "):]
+        get_db().execute('UPDATE neg = ? '
+                         ' FROM decision p JOIN user u ON p.user_id = u.id'
+                         ' WHERE p.user_id = ?', (stuff, g.user['id'])
+                         )
+    get_db().execute('UPDATE post SET votes = votes + 1')
+    get_db().execute('UPDATE pos = ? '
+                     ' FROM decision p JOIN user u ON p.user_id = u.id'
+                     ' WHERE p.user_id = ?', (stuff2+" "+id+" ", g.user['id'])
+                     )
+
+    return redirect('blog.look', id)
 
 
 @bp.route('/<int:id>/update', methods=('GET', 'POST'))
