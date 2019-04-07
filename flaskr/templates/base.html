@@ -7,12 +7,12 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
           integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
-    <title>{% block title %}{% endblock %} - Flaskr</title>
+    <title>{% block title %}{% endblock %} - ActionX</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 <header class="site-header">
-    <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
+    <nav class="navbar navbar-expand-md navbar-dark bg-info fixed-top">
         <div class="container">
             <a class="navbar-brand mr-4" href="{{ url_for('blog.index') }}">ActionX</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle"
@@ -22,12 +22,11 @@
             <div class="collapse navbar-collapse" id="navbarToggle">
                 <div class="navbar-nav mr-auto">
                     <a class="nav-item nav-link" href="#">Home</a>
-                    <a class="nav-item nav-link" href="#">About</a>
+                    <a class="nav-item nav-link" href="{{ url_for('blog.create') }}">New Post</a>
                 </div>
                 <!-- Navbar Right Side -->
                 <div class="navbar-nav">
                     {% if g.user %}
-                    <a class="nav-item nav-link" href="{{ url_for('blog.create') }}">New Post</a>
                     <a class="nav-item nav-link">{{ g.user['username'] }}</a>
                     <a class="nav-item nav-link" href="{{ url_for('auth.logout') }}">Log Out</a>
                     {% else %}
@@ -42,7 +41,9 @@
 <main role="main" class="content">
     <div class="row">
         <div class="col-md-12">
-            {% block header %}{% endblock %}
+            <br>
+            <br>
+            {% block header %} {% endblock %}
             {% block content %}{% endblock %}
         </div>
         <!--<div class="col-md-4">
