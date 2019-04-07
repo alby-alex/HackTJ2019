@@ -6,7 +6,8 @@ CREATE TABLE user
 (
     id       INTEGER PRIMARY KEY AUTOINCREMENT,
     username TEXT UNIQUE NOT NULL,
-    password TEXT        NOT NULL
+    password TEXT        NOT NULL,
+    address  TEXT        NOT NULL
 );
 
 CREATE TABLE post
@@ -16,14 +17,14 @@ CREATE TABLE post
     created   TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     title     TEXT      NOT NULL,
     body      TEXT      NOT NULL,
-    votes     INTEGER  NOT NULL,
-    writer    TEXT NOT NULL,
+    votes     INTEGER   NOT NULL,
+    writer    TEXT      NOT NULL,
     FOREIGN KEY (author_id) REFERENCES user (id)
 );
 CREATE TABLE comment
 (
-    writer TEXT NOT NULL,
-    body TEXT NOT NULL,
-    id INTEGER NOT NULL,
+    writer  TEXT      NOT NULL,
+    body    TEXT      NOT NULL,
+    id      INTEGER   NOT NULL,
     created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

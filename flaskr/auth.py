@@ -15,6 +15,7 @@ def register():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+        address = request.form['address']
         db = get_db()
         error = None
 
@@ -22,6 +23,8 @@ def register():
             error = 'Username is required.'
         elif not password:
             error = 'Password is required.'
+        elif not address:
+            error = 'Address is required.'
         elif db.execute(
                 'SELECT id FROM user WHERE username = ?', (username,)
         ).fetchone() is not None:
@@ -29,8 +32,8 @@ def register():
 
         if error is None:
             db.execute(
-                'INSERT INTO user (username, password) VALUES (?, ?)',
-                (username, generate_password_hash(password))
+                'INSERT INTO user (username, password, address) VALUES (?, ?, ?)',
+                (username, generate_password_hash(password), address)
             )
             db.commit()
             return redirect(url_for('auth.login'))
@@ -77,10 +80,11 @@ def load_logged_in_user():
             'SELECT * FROM user WHERE id = ?', (user_id,)
         ).fetchone()
 
+
 @bp.route('/logout')
 def logout():
     session.clear()
-    g.user=None
+    g.user = None
     return redirect(url_for('index'))
 
 
