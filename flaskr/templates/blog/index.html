@@ -1,7 +1,17 @@
 {% extends 'base.html' %}
 
 {% block header %}
-<h1>{% block title %}Posts{% endblock %}</h1>
+<div class="row justify-content-center">
+    <h1>{% block title %}Posts{% endblock %}</h1>
+</div>
+<div class="row justify-content-center">
+    <div class="search-box">
+        <input type="text" name="" class="search-txt" placeholder="Type to search"/>
+        <a class="search-btn" href="#">
+            <i class="fas fa-search"></i>
+        </a>
+    </div>
+</div>
 <hr>
 {% endblock %}
 
