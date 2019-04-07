@@ -61,10 +61,12 @@ def get_post(id, check_author=True):
             abort(403)
 
     return post
-@bp.route('/<int:id>/comment', methods = ['GET', 'POST'])
+
+
+@bp.route('/<int:id>/comment', methods=['GET', 'POST'])
 @login_required
 def comment(id):
-    if request.method=='POST':
+    if request.method == 'POST':
         writer = g.user['username']
         body = request.form['body']
         if body is None:
@@ -77,7 +79,7 @@ def comment(id):
         get_db().commit()
         return redirect(url_for('blog.look', id=id))
 
-    return render_template('blog/comment.html', post = get_post(id, check_author=False))
+    return render_template('blog/comment.html', post=get_post(id, check_author=False))
 
 
 @bp.route('/<int:id>', methods=['GET'])
@@ -86,10 +88,10 @@ def look(id):
     db = get_db()
     comments = db.execute(
         'SELECT body, writer, created'
-        ' FROM comment p '
-        ' ORDER BY created DESC'
+        ' FROM comment p WHERE id= ? '
+        ' ORDER BY created DESC', (id,)
     ).fetchall()
-    return render_template('blog/look.html', post=post, comment= comments)
+    return render_template('blog/look.html', post=post, comment=comments)
 
 
 @bp.route('/<int:id>/upvote', methods=['GET', 'POST'])
