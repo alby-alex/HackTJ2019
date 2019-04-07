@@ -23,6 +23,7 @@ def getInfo(address):
         last_name = representative['last_name']
         photo = representative['photo']
         temp = representative['socials']
+        title = representative['office_details']['position']
         for x in temp:
             twitter_handle = x['identifier_type']
             if "TWITTER" == twitter_handle:
@@ -33,8 +34,8 @@ def getInfo(address):
             levelC = 'NATIONAL'
         else:
             levelC = 'STATE'
-        dict.append({'Name' : (first_name + last_name), 'Photo' : photo, 'Twitter' : twitter_handle, 'Level' : levelC})
+        dict.append({'Name' : (first_name +" "+last_name), 'Photo' : photo, 'Twitter' : twitter_handle, 'Level' : levelC, 'Title': title})
     return dict;
 
 
-print(getInfo("6560 Braddock Rd"))
+print(getInfo("42439 Madturkey Run Pl"))

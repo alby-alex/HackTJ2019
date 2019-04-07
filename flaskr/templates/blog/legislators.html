@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block header %}
+    <h1>{% block title %}My Legislators{% endblock %}</h1>
+    <hr>
+{% endblock %}
+
+{% block content %}
+    {% for list in dict %}
+        <h1>{{ list['Title']+" " +list['Name'] }}</h1>
+        <br>
+        <text>{{ list['Level'] }}</text>
+        <br>
+        <img src={{ list['Photo'] }} alt="image" style="width:250px;height:250px;">
+        <br>
+        <text>Twitter Handle: </text><a class="action" href="https://twitter.com/{{ list['Twitter'] }}">{{ "@"+ list['Twitter'] }}</a>
+        {% if not loop.last %}
+            <hr>
+        {% endif %}
+    {% endfor %}
+{% endblock %}

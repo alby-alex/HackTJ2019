@@ -8,7 +8,12 @@ from flaskr.db import get_db
 
 bp = Blueprint('blog', __name__)
 
-
+@login_required
+@bp.route('/legislators')
+def legislators():
+    from . import P2A_GET
+    list = P2A_GET.getInfo(g.user['address'])
+    return render_template('blog/legislators.html', dict=list)
 @bp.route('/')
 def index():
     db = get_db()
